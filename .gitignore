@@ -1,2 +1,10 @@
 *.class
 *.log
+target
+logs
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+
