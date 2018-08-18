@@ -5,6 +5,9 @@ scala:
   - 2.12.6
 jdk:
   - oraclejdk8
+before_script:
+  - docker pull ryandkb8/tasks-postgresql:latest
+  - docker run -d -p 127.0.0.1:5432:5432 ryandkb8/tasks-postgresql:latest
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean compile test
 branches:
