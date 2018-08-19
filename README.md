@@ -21,6 +21,9 @@ To bring up the database and run all the tests run the following:
 sbt clean test compile
 ```
 
+## Building docker image
+To build the docker image run the following: `./build.sh`
+
 
 ## Releasing
 To build the docker image and push it to docker hub run the following: `./release.sh`
