@@ -1,13 +1,15 @@
 package db
 
-import org.joda.time.LocalDate
-import anorm._
 import anorm.JodaParameterMetaData._
 import anorm.Macro.ColumnNaming
+import anorm._
+import db.TasksDao.parser
 import javax.inject.{Inject, Singleton}
 import models.TaskForm
+import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.db.Database
+import play.api.libs.json._
 
 case class Task(
   id: Long,
@@ -27,6 +29,10 @@ class TasksDao @Inject() (
       | INSERT INTO tasks(name, description, due_date, completed_at) VALUES ({name}, {description}, {due_date}, {completed_at})
     """.stripMargin
 
+  private val UpdateQuery: String =
+    """
+      | UPDATE tasks set name = {name}, description = {description}, due_date = {due_date}, completed_at = {completed_at} where id = {id}
+    """.stripMargin
   private val SelectQuery: String =
     """
       | SELECT * FROM tasks
@@ -118,6 +124,23 @@ class TasksDao @Inject() (
   }
 
   /**
+    * Updates the existing record if it exists
+    */
+  def updateById(id: Long, taskForm: TaskForm): Option[Task] = {
+    database.withConnection { implicit c =>
+      SQL(UpdateQuery)
+        .on('id -> id)
+        .on('name -> taskForm.name)
+        .on('description -> taskForm.description)
+        .on('due_date -> taskForm.dueDate)
+        .on('completed_at -> taskForm.completedAt)
+        .executeUpdate()
+
+      findById(id)
+    }
+  }
+
+  /**
     * Deletes a task given an id
     */
   def deleteById(id: Long): Unit = {
@@ -128,6 +151,32 @@ class TasksDao @Inject() (
     }
   }
 
+}
+
+
+object TasksDao {
+
+  import play.api.libs.functional.syntax._
+  import utils.LocalDateUtil._
+
   private val parser: RowParser[Task] = Macro.namedParser[Task](ColumnNaming.SnakeCase)
+
+  implicit val TaskWrites: Writes[Task] = new Writes[Task] {
+    def writes(task: Task): JsObject = Json.obj(
+      "id" -> task.id,
+      "name" -> task.name,
+      "description" -> task.description,
+      "due_date" -> task.dueDate.toString(),
+      "completed_at" -> task.completedAt.map(_.toString())
+    )
+  }
+
+  implicit val TaskReads: Reads[Task] = (
+    (JsPath \ "id").read[Long] and
+    (JsPath \ "name").read[String] and
+    (JsPath \ "description").read[String] and
+    (JsPath \ "due_date").read[LocalDate] and
+    (JsPath \ "completed_at").readNullable[LocalDate]
+    )(Task.apply _)
 
 }
