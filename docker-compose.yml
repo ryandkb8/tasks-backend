@@ -1,7 +1,7 @@
 version: '3'
 services:
   tasks-backend:
-    image: "ryandkb8/tasks-backend"
+    build: .
     ports:
       - "9000:9000"
     depends_on:
@@ -10,6 +10,6 @@ services:
       - DB_DEFAULT_URL=jdbc:postgresql://tasks-postgresql:5432/tasks
       - APPLICATION_SECRET=2dd747bc7ce54d3ab3c645a83e8db657
   tasks-postgresql:
-    image: "ryandkb8/tasks-postgresql"
+    image: "ryandkb8/tasks-postgresql:latest"
     ports:
       - "5432:5432"
