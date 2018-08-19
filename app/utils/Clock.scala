@@ -29,7 +29,7 @@ class DefaultClock @Inject() () extends Clock {
   override def currentDate: LocalDate = new LocalDate()
 }
 
-
+@Singleton
 class MockClock @Inject() () extends Clock {
 
   private val date = new AtomicReference[LocalDate](new LocalDate())
