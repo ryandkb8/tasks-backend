@@ -18,7 +18,7 @@ A docker container with the postgresql database must be running in order to run 
 To bring up the database and run all the tests run the following:
 ```
 ./start_db.sh
-sbt clean test compile
+sbt clean compile test
 ```
 
 ## Building docker image
