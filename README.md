@@ -24,3 +24,4 @@ sbt clean test compile
 
 ## Releasing
 To build the docker image and push it to docker hub run the following: `./release.sh`
+The image is versioned by the shorted git hash
