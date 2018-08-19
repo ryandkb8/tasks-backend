@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.4-1200-jdbc41",
   "com.typesafe.play" %% "anorm" % "2.5.3",
   "org.slf4j" % "slf4j-api" % "1.7.25",
+  "com.typesafe.play" %% "play-json-joda" % "2.6.10" excludeAll(ExclusionRule(organization = "org.slf4j")),
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 )
 

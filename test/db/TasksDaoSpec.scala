@@ -1,6 +1,5 @@
 package db
 
-import anorm.SQL
 import models.TaskForm
 import org.joda.time.LocalDate
 import org.scalatest.BeforeAndAfter
@@ -12,29 +11,52 @@ class TasksDaoSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfter
 
   // before each test runs delete everything from the database
   before {
-    database.withConnection { implicit c =>
-      SQL("truncate tasks").execute()
-    }
+    cleanupDb()
   }
 
   "insert into tasks with empty completed at" in {
     val taskForm = TaskForm(randomString, "My first task", new LocalDate(2018, 8, 18), None)
     val taskEither = tasksDao.insert(taskForm)
-    val task = rightOrFail(taskEither)
-    taskEqualsTaskForm(task, taskForm)
+    val task = rightOrError(taskEither)
+    taskEqualsTaskForm(task, taskForm) mustBe true
   }
 
   "insert into tasks when completed at is not empty" in {
     val taskForm = TaskForm(randomString, "My first task", new LocalDate(2018, 8, 18), Some(new LocalDate(2018, 8, 20)))
     val taskEither = tasksDao.insert(taskForm)
-    val task = rightOrFail(taskEither)
-    taskEqualsTaskForm(task, taskForm)
+    val task = rightOrError(taskEither)
+    taskEqualsTaskForm(task, taskForm) mustBe true
+  }
+
+  "update task" in {
+    val dueDate = new LocalDate(2018, 8, 18)
+    val completedAt = new LocalDate(2018, 8, 20)
+    val taskForm1 = TaskForm(randomString, "My first task", dueDate, None)
+    val taskForm2 = TaskForm(randomString, "My first task", dueDate, None)
+    val taskForm3 = TaskForm(randomString, "My first task", dueDate, None)
+
+    val task1 = rightOrError(tasksDao.insert(taskForm1))
+    val task2 = rightOrError(tasksDao.insert(taskForm2))
+    val task3 = rightOrError(tasksDao.insert(taskForm3))
+
+    taskEqualsTaskForm(task1, taskForm1) mustBe true
+    taskEqualsTaskForm(task2, taskForm2) mustBe true
+    taskEqualsTaskForm(task3, taskForm3) mustBe true
+
+    val updatedForm = taskForm1.copy(completedAt = Some(completedAt))
+    val updatedTask = tasksDao.updateById(task1.id, updatedForm).getOrElse(fail(s"Error updating task with id: ${task1.id}"))
+
+    // only task1 should have changed
+    taskEqualsTaskForm(updatedTask, updatedForm) mustBe true
+    taskEqualsTaskForm(updatedTask, taskForm1) mustBe false
+    taskEqualsTaskForm(task2, taskForm2) mustBe true
+    taskEqualsTaskForm(task3, taskForm3) mustBe true
   }
 
   "find tasks by id" in {
     val taskForm = TaskForm(randomString, "My first task", new LocalDate(2018, 8, 18), None)
     val taskEither = tasksDao.insert(taskForm)
-    val task = rightOrFail(taskEither)
+    val task = rightOrError(taskEither)
 
     val foundTask = tasksDao.findById(task.id).getOrElse(fail(s"Could not find task for id: ${task.id}"))
     foundTask mustBe task
@@ -49,9 +71,9 @@ class TasksDaoSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfter
     val taskForm2 = TaskForm(randomString, "My first task", new LocalDate(2018, 8, 18), Some(new LocalDate(2018, 8, 20)))
     val taskForm3 = TaskForm(randomString, "My first task", new LocalDate(2018, 8, 18), Some(new LocalDate(2018, 8, 20)))
 
-    val task1 = rightOrFail(tasksDao.insert(taskForm1))
-    val task2 = rightOrFail(tasksDao.insert(taskForm2))
-    val task3 = rightOrFail(tasksDao.insert(taskForm3))
+    val task1 = rightOrError(tasksDao.insert(taskForm1))
+    val task2 = rightOrError(tasksDao.insert(taskForm2))
+    val task3 = rightOrError(tasksDao.insert(taskForm3))
 
     val tasks = tasksDao.findAll()
     tasks.size mustBe 3
@@ -73,10 +95,10 @@ class TasksDaoSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfter
     val taskForm3 = TaskForm(randomString, "My first task", date2, Some(new LocalDate(2018, 8, 20)))
     val taskForm4 = TaskForm(randomString, "My first task", date3, Some(new LocalDate(2018, 8, 20)))
 
-    val task1 = rightOrFail(tasksDao.insert(taskForm1))
-    val task2 = rightOrFail(tasksDao.insert(taskForm2))
-    val task3 = rightOrFail(tasksDao.insert(taskForm3))
-    val task4 = rightOrFail(tasksDao.insert(taskForm4))
+    val task1 = rightOrError(tasksDao.insert(taskForm1))
+    val task2 = rightOrError(tasksDao.insert(taskForm2))
+    val task3 = rightOrError(tasksDao.insert(taskForm3))
+    val task4 = rightOrError(tasksDao.insert(taskForm4))
 
     val tasks = tasksDao.findByDueDate(Seq(date1, date3))
     tasks.size mustBe 3
@@ -93,10 +115,10 @@ class TasksDaoSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfter
     val taskForm3 = TaskForm(randomString, "My first task", dueDate, Some(completedDate))
     val taskForm4 = TaskForm(randomString, "My first task", dueDate, None)
 
-    val task1 = rightOrFail(tasksDao.insert(taskForm1))
-    val task2 = rightOrFail(tasksDao.insert(taskForm2))
-    val task3 = rightOrFail(tasksDao.insert(taskForm3))
-    val task4 = rightOrFail(tasksDao.insert(taskForm4))
+    val task1 = rightOrError(tasksDao.insert(taskForm1))
+    val task2 = rightOrError(tasksDao.insert(taskForm2))
+    val task3 = rightOrError(tasksDao.insert(taskForm3))
+    val task4 = rightOrError(tasksDao.insert(taskForm4))
 
     val tasks = tasksDao.findAllCompleted()
     tasks.size mustBe 2
@@ -113,10 +135,10 @@ class TasksDaoSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfter
     val taskForm3 = TaskForm(randomString, "My first task", dueDate, Some(completedDate))
     val taskForm4 = TaskForm(randomString, "My first task", dueDate2, None)
 
-    val task1 = rightOrFail(tasksDao.insert(taskForm1))
-    val task2 = rightOrFail(tasksDao.insert(taskForm2))
-    val task3 = rightOrFail(tasksDao.insert(taskForm3))
-    val task4 = rightOrFail(tasksDao.insert(taskForm4))
+    val task1 = rightOrError(tasksDao.insert(taskForm1))
+    val task2 = rightOrError(tasksDao.insert(taskForm2))
+    val task3 = rightOrError(tasksDao.insert(taskForm3))
+    val task4 = rightOrError(tasksDao.insert(taskForm4))
 
     // this should find task2 and task4 as they were due the 18th and were passing in the 20th
     val tasks = tasksDao.findOverdue(new LocalDate(2018, 8, 20))
@@ -135,8 +157,8 @@ class TasksDaoSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfter
     val taskForm1 = TaskForm(randomString, "My first task", new LocalDate(2018, 8, 18), Some(new LocalDate(2018, 8, 20)))
     val taskForm2 = TaskForm(randomString, "My first task", new LocalDate(2018, 8, 18), Some(new LocalDate(2018, 8, 20)))
 
-    val task1 = rightOrFail(tasksDao.insert(taskForm1))
-    val task2 = rightOrFail(tasksDao.insert(taskForm2))
+    val task1 = rightOrError(tasksDao.insert(taskForm1))
+    val task2 = rightOrError(tasksDao.insert(taskForm2))
 
     val tasks = tasksDao.findAll()
     tasks.size mustBe 2
@@ -149,22 +171,6 @@ class TasksDaoSpec extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfter
     val updatedtasks = tasksDao.findAll()
     updatedtasks.size mustBe 1
     updatedtasks.head.id mustBe task2.id
-  }
-
-  // validates that task and task form have the same values (with the exception of id which task form doesn't have)
-  // tests will fail if the values differ
-  private def taskEqualsTaskForm(task: Task, taskForm: TaskForm): Unit = {
-    task.name mustBe taskForm.name
-    task.description mustBe taskForm.description
-    task.dueDate mustBe taskForm.dueDate
-    task.completedAt mustBe taskForm.completedAt
-  }
-
-  private def rightOrFail[T](either: Either[_, T]): T = {
-    either match {
-      case Right(value) => value
-      case Left(_) => fail("Expected either to be right, but was left")
-    }
   }
 
 }
