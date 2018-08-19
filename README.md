@@ -13,11 +13,11 @@ To bring up a local instance of the backend and postgresql database run the foll
 ## Running tests
 In order to run tests you must have Java 8 and SBT installed as well as docker running.
 
-A docker container with the postgresql database must be running in order to run tests. This can be brought up with by running: `./script_db.sh`
+A docker container with the postgresql database must be running in order to run tests. This can be brought up with by running: `./start_db.sh`
 
 To bring up the database and run all the tests run the following:
 ```
-./script_db.sh
+./start_db.sh
 sbt clean test compile
 ```
 
