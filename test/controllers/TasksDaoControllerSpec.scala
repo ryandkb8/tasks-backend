@@ -100,6 +100,7 @@ class TasksDaoControllerSpec extends PlaySpec with GuiceOneServerPerSuite with B
     val response = await(taskClient.withQueryStringParameters("dueToday" -> "true", "dueTomorrow" -> "false").get())
     response.status mustBe Http.Status.OK
     val tasks = Json.parse(response.body).as[Seq[Task]]
+    println(s"!!!!!!!!! $tasks")
     tasks.size mustBe 2
     tasks.contains(task1) mustBe true
     tasks.contains(task2) mustBe true
@@ -127,6 +128,7 @@ class TasksDaoControllerSpec extends PlaySpec with GuiceOneServerPerSuite with B
     val response = await(taskClient.withQueryStringParameters("dueToday" -> "false", "dueTomorrow" -> "true").get())
     response.status mustBe Http.Status.OK
     val tasks = Json.parse(response.body).as[Seq[Task]]
+    println(s"!!!!!!!!! $tasks")
     tasks.size mustBe 2
     tasks.contains(task3) mustBe true
     tasks.contains(task4) mustBe true
@@ -155,6 +157,7 @@ class TasksDaoControllerSpec extends PlaySpec with GuiceOneServerPerSuite with B
     response.status mustBe Http.Status.OK
     val tasks = Json.parse(response.body).as[Seq[Task]]
     tasks.size mustBe 4
+    println(s"!!!!!!!!! $tasks")
     tasks.contains(task1) mustBe true
     tasks.contains(task2) mustBe true
     tasks.contains(task3) mustBe true
@@ -182,6 +185,7 @@ class TasksDaoControllerSpec extends PlaySpec with GuiceOneServerPerSuite with B
     val response = await(taskClient.withQueryStringParameters("overdue" -> "true").get())
     response.status mustBe Http.Status.OK
     val tasks = Json.parse(response.body).as[Seq[Task]]
+    println(s"!!!!!!!!! $tasks")
     tasks.size mustBe 2
     tasks.contains(task1) mustBe true
     tasks.contains(task2) mustBe true
