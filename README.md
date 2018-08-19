@@ -5,7 +5,7 @@
 This service provides an API for basic CRUD operations relating to tasks. Postgresql is used as the data store.
 
 ## Continuous Integration 
-Creating a pull-request will trigger a build in traivs-ci
+Creating a pull-request will trigger a build in traivs-ci.
 
 ## Bringing up local instance
 To bring up a local instance of the backend and postgresql database run the following:  `docker-compose up`
@@ -13,7 +13,7 @@ To bring up a local instance of the backend and postgresql database run the foll
 ## Running tests
 In order to run tests you must have Java 8 and SBT installed as well as docker running.
 
-A docker container with the postgresql database must be running in order to run tests. This can be brought up with by running `./script_db.sh`
+A docker container with the postgresql database must be running in order to run tests. This can be brought up with by running: `./script_db.sh`
 
 To bring up the database and run all the tests run the following:
 ```
