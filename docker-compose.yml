@@ -1,7 +1,7 @@
 version: '3'
 services:
   tasks-backend:
-    build: .
+    image: "ryandkb8/tasks-backend:latest"
     ports:
       - "9000:9000"
     depends_on:
