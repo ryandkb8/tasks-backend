@@ -14,7 +14,7 @@ import utils.Clock
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TasksDaoController @Inject()(
+class TasksController @Inject()(
   val controllerComponents: ControllerComponents,
   tasksDao: TasksDao,
   system: ActorSystem,

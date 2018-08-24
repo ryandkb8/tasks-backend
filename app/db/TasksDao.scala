@@ -96,7 +96,7 @@ class TasksDao @Inject() (
     */
   def findByDueDate(dates: Seq[LocalDate]): Seq[Task] = {
     database.withConnection { implicit c =>
-      SQL(SelectQuery + " WHERE due_date in ({dates})")
+      SQL(SelectQuery + " WHERE due_date in ({dates}) and completed_at is null")
         .on('dates -> dates)
         .as(parser.*)
     }
