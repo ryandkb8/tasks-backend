@@ -129,8 +129,7 @@ class TasksControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Befo
     val response = await(taskClient.withQueryStringParameters("dueToday" -> "false", "dueTomorrow" -> "true").get())
     response.status mustBe Http.Status.OK
     val tasks = Json.parse(response.body).as[Seq[Task]]
-    tasks.size mustBe 2
-    tasks.contains(task3) mustBe true
+    tasks.size mustBe 1
     tasks.contains(task4) mustBe true
   }
 
