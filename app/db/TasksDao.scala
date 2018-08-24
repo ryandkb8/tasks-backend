@@ -96,7 +96,7 @@ class TasksDao @Inject() (
     */
   def findByDueDate(dates: Seq[LocalDate]): Seq[Task] = {
     database.withConnection { implicit c =>
-      SQL(SelectQuery + " WHERE due_date in ({dates})")
+      SQL(SelectQuery + " WHERE due_date in ({dates}) and completed_at is null order by created_at")
         .on('dates -> dates)
         .as(parser.*)
     }
@@ -107,7 +107,7 @@ class TasksDao @Inject() (
     */
   def findAllCompleted(): Seq[Task] = {
     database.withConnection { implicit c =>
-      SQL(SelectQuery + " WHERE completed_at is not null")
+      SQL(SelectQuery + " WHERE completed_at is not null order by created_at")
         .as(parser.*)
     }
   }
@@ -117,7 +117,7 @@ class TasksDao @Inject() (
     */
   def findOverdue(date: LocalDate): Seq[Task] = {
     database.withConnection { implicit c =>
-      SQL(SelectQuery + " WHERE completed_at is null and due_date < {date}")
+      SQL(SelectQuery + " WHERE completed_at is null and due_date < {date} order by created_at")
         .on('date -> date)
         .as(parser.*)
     }

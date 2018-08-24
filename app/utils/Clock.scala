@@ -1,9 +1,11 @@
 package utils
 
+import java.time.ZoneId
+import java.util.TimeZone
 import java.util.concurrent.atomic.AtomicReference
 
 import javax.inject.{Inject, Singleton}
-import org.joda.time.LocalDate
+import org.joda.time.{DateTimeZone, LocalDate}
 import play.api.Mode.{Dev, Prod}
 import play.api.{Configuration, Environment}
 import play.api.inject.{Binding, Module}
@@ -26,7 +28,7 @@ trait Clock {
 
 @Singleton
 class DefaultClock @Inject() () extends Clock {
-  override def currentDate: LocalDate = new LocalDate()
+  override def currentDate: LocalDate = new LocalDate(ZoneId.of("America/New_York"))
 }
 
 @Singleton

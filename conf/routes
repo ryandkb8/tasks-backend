@@ -1,5 +1,5 @@
-GET         /task/:id           controllers.TasksDaoController.getById(id: Long)
-GET         /task               controllers.TasksDaoController.getAll(dueToday: Boolean ?= false, dueTomorrow: Boolean ?= false, overdue: Boolean ?= false, completed: Boolean ?= false)
-POST        /task               controllers.TasksDaoController.post
-PUT         /task/:id           controllers.TasksDaoController.putById(id: Long)
-DELETE      /task/:id           controllers.TasksDaoController.deleteById(id: Long)
+GET         /task/:id           controllers.TasksController.getById(id: Long)
+GET         /task               controllers.TasksController.getAll(dueToday: Boolean ?= false, dueTomorrow: Boolean ?= false, overdue: Boolean ?= false, completed: Boolean ?= false)
+POST        /task               controllers.TasksController.post
+PUT         /task/:id           controllers.TasksController.putById(id: Long)
+DELETE      /task/:id           controllers.TasksController.deleteById(id: Long)
